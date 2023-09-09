@@ -1,62 +1,83 @@
-import * as z from "zod"
+import * as z from 'zod';
 
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { LoginForm } from '@/types/auth'
-import { useState } from 'react'
-import { useTranslation } from 'react-i18next'
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { LoginForm } from '@/types/auth';
+import { useForm } from 'react-hook-form';
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { zodResolver } from '@hookform/resolvers/zod';
 
 const formSchema = z.object({
-    email: z.string().min(8).max(50).email(),
-    password: z.string().min(8).max(50)
-})
+  email: z.string().min(8).max(50).email(),
+  password: z.string().min(8).max(50)
+});
 type Props = {
-    isOpen: boolean,
-    close: () => void,
-    signIn: (form: LoginForm) => void
-}
-export function LoginDialog({isOpen, signIn, close}: Props) {
-    const {t} = useTranslation('auth')
-    
+  signIn: (form: LoginForm) => void;
+};
+export function LoginDialog({ signIn }: Props) {
+  const [open, setOpen] = useState(false);
+  const { t } = useTranslation('auth');
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      email: '',
+      password: ''
+    }
+  });
+
+  function onSubmit(values: z.infer<typeof formSchema>) {
+    signIn(values)
+    setOpen(false)
+  }
   return (
-    <Dialog open={isOpen}>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline">{t('signIn')}</Button>
+        <Button>{t('signIn')}</Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className='sm:max-w-[425px]'>
         <DialogHeader>
           <DialogTitle>{t('signIn')}</DialogTitle>
           {/* <DialogDescription>
           </DialogDescription> */}
         </DialogHeader>
-        <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="name" className="text-right">
-            </Label>
-            <Input id="name" value="Pedro Duarte" className="col-span-3" />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="username" className="text-right">
-              Username
-            </Label>
-            <Input id="username" value="@peduarte" className="col-span-3" />
-          </div>
-        </div>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className='grid gap-4 py-4'>
+            <FormField
+              control={form.control}
+              name='email'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email</FormLabel>
+                  <FormControl>
+                    <Input placeholder='Email' {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name='password'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('password')}</FormLabel>
+                  <FormControl>
+                    <Input type='password' placeholder='******' {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
         <DialogFooter>
-          <Button type="submit">Save changes</Button>
+          <Button type='submit'>Save changes</Button>
         </DialogFooter>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

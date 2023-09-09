@@ -1,23 +1,28 @@
 import React, { useState } from 'react';
 
-import { Button } from '@/components/ui/button';
+import { Button } from '../../ui/button';
 import { LoginDialog } from './LoginDialog';
 import { LoginForm } from '@/types/auth';
+import { useBoundStore } from '@/store';
+import { useTranslation } from 'react-i18next';
 
 const Right = () => {
-  const [isOpenDialog, setIsOpenDialog] = useState(false);
-  const openLoginDialog = () => {
-    setIsOpenDialog(true)
-  }
+  const {t, i18n} = useTranslation('auth')
+  const {isAuth, fullname, setUser, logout} = useBoundStore((state) => state)
   const signIn = ({ email, password }: LoginForm) => {
-    console.log('Signin', email, password);
+    setUser(email)
   };
-  const closeDialog = () => { setIsOpenDialog(false) }
+  const signOut = () => {
+    logout()
+  }
   return (
     <div className='h-full flex items-center gap-4'>
-      <Button onClick={openLoginDialog}>Sign in</Button>
-      <LoginDialog isOpen={isOpenDialog} signIn={signIn} close={closeDialog} />
-      <div className='avatar'>Guest</div>
+      <div className='avatar'>{isAuth ? fullname : 'Guest'}</div>
+      {isAuth ? (
+        <Button onClick={signOut}>Logout</Button>
+        ): (
+        <LoginDialog signIn={signIn}/>
+        )}
     </div>
   );
 };

@@ -1,17 +1,16 @@
-import './Layout.css'
+import './Layout.css';
 
-import Header from './Header'
-import React from 'react'
+import Footer from './Footer';
+import Header from './Header';
+import { PropsWithChildren } from 'react';
+import React from 'react';
 
-export const Layout = () => {
+export const Layout = ({ children }: PropsWithChildren) => {
   return (
-    <div className='layout w-screen min-h-screen grid grid-rows-3 h-full'>
-        <Header />
-        <div className='layout-container'>
-            <div>Ads</div>
-            <div>Content</div>
-        </div>
-        <div>Footer</div>
+    <div className='layout w-screen min-h-screen grid grid-rows-[64px_minmax(calc(100vh-64px-100px),_1fr)_100px] h-full'>
+      <Header />
+      <div className='container mt-8'>{children}</div>
+      <Footer />
     </div>
-  )
-}
+  );
+};
