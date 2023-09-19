@@ -1,7 +1,16 @@
 import { AuthSlice, createAuthSlice } from './authSlice'
 
-import { create } from 'zustand'
+import { createStore } from 'zustand/vanilla'
 
-export const useBoundStore = create<AuthSlice>((...a) => ({
+const appStore = createStore<AuthSlice>((...a) => ({
   ...createAuthSlice(...a),
 }))
+
+const {getState, setState, subscribe} = appStore
+
+export {
+  getState,
+  setState,
+  subscribe,
+  appStore
+}

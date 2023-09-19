@@ -1,5 +1,6 @@
 import './index.css';
 import '@/lib/i18n';
+import '@/lib/firebase';
 
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 
